@@ -19,12 +19,12 @@ class LoginAttemptServiceTest {
   }
 
   @Test
-  void assertNotLocked_noAttemptsYet_doesNotThrow() {
+  void assertNotLocked_noFailureAttempts_noExceptionThrown() {
     assertDoesNotThrow(() -> service.assertNotLocked(USER));
   }
 
   @Test
-  void assertNotLocked_afterThreshold_throwsApiException() {
+  void assertNotLocked_thresholdExceeded_apiExceptionThrown() {
     for (int i = 0; i < 3; i++) {
       try {
         service.recordFailure(USER);
@@ -35,20 +35,20 @@ class LoginAttemptServiceTest {
   }
 
   @Test
-  void recordFailure_beforeThreshold_doesNotThrow() {
+  void recordFailure_belowThreshold_noExceptionThrown() {
     assertDoesNotThrow(() -> service.recordFailure(USER));
     assertDoesNotThrow(() -> service.recordFailure(USER));
   }
 
   @Test
-  void recordFailure_onThreshold_throwsLockedException() {
+  void recordFailure_thresholdReached_lockedExceptionThrown() {
     service.recordFailure(USER);
     service.recordFailure(USER);
     assertThrows(LockedException.class, () -> service.recordFailure(USER));
   }
 
   @Test
-  void reset_clearsCounter_soUserCanLoginAgain() {
+  void reset_lockedUser_counterClearedAndUserCanLogin() {
     for (int i = 0; i < 3; i++) {
       try {
         service.recordFailure(USER);

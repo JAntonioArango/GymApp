@@ -32,7 +32,7 @@ class TrainingControllerTest {
   @Mock private User mockUser;
 
   @Test
-  void add_ShouldCallServiceAndReturnOk() {
+  void add_validTrainingDto_serviceCalledAndOkStatus() {
 
     CreateTrainingDto createTrainingDto =
         new CreateTrainingDto(
@@ -45,7 +45,7 @@ class TrainingControllerTest {
   }
 
   @Test
-  void traineeTrainings_ShouldReturnTraineeTrainings() {
+  void traineeTrainings_validFilters_traineeTrainingsListReturned() {
     String username = "testUser";
     LocalDate from = LocalDate.now();
     LocalDate to = LocalDate.now().plusDays(7);
@@ -83,7 +83,7 @@ class TrainingControllerTest {
   }
 
   @Test
-  void trainerTrainings_ShouldReturnTrainerTrainings() {
+  void trainerTrainings_validFilters_trainerTrainingsListReturned() {
     String username = "testTrainer";
     LocalDate from = LocalDate.now();
     LocalDate to = LocalDate.now().plusDays(7);
@@ -114,7 +114,7 @@ class TrainingControllerTest {
   }
 
   @Test
-  void listTypes_ShouldReturnTrainingTypes() {
+  void listTypes_noParameters_trainingTypesListReturned() {
     List<TrainingTypeDto> types = List.of(/* initialize with test data */ );
     when(trainingService.listTrainingTypes()).thenReturn(types);
 

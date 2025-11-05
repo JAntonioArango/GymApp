@@ -36,14 +36,14 @@ class TrainingServiceTest {
   }
 
   @Test
-  void addTraining_shouldFailWhenTraineeNotFound() {
+  void addTraining_nonExistentTrainee_apiExceptionThrown() {
     when(traineeRepo.findByUserUsername("user1")).thenReturn(Optional.empty());
     ApiException ex = assertThrows(ApiException.class, () -> service.addTraining(dto));
     assertTrue(ex.getMessage().contains("Trainee"));
   }
 
   @Test
-  void addTraining_shouldSaveWhenAllFound() {
+  void addTraining_validTraineeAndTrainer_trainingSaved() {
     Trainee t = new Trainee();
     Trainer tr = new Trainer();
     when(traineeRepo.findByUserUsername("user1")).thenReturn(Optional.of(t));

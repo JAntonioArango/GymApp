@@ -9,21 +9,21 @@ import org.springframework.http.HttpStatus;
 class ApiExceptionTest {
 
   @Test
-  void testNotFoundFactory() {
+  void notFound_entityAndId_notFoundExceptionWithMessage() {
     ApiException ex = ApiException.notFound("User", 123);
     assertEquals(HttpStatus.NOT_FOUND, ex.getStatus());
     assertTrue(ex.getMessage().contains("User not found: 123"));
   }
 
   @Test
-  void testBadCredentialsFactory() {
+  void badCredentials_noParameters_unauthorizedExceptionWithMessage() {
     ApiException ex = ApiException.badCredentials();
     assertEquals(HttpStatus.UNAUTHORIZED, ex.getStatus());
     assertEquals("Invalid username or password", ex.getMessage());
   }
 
   @Test
-  void testBadRequestFactory() {
+  void badRequest_invalidInput_badRequestExceptionWithMessage() {
     String invalidInput = "Invalid input";
     ApiException ex = ApiException.badRequest(invalidInput);
     assertEquals(HttpStatus.BAD_REQUEST, ex.getStatus());

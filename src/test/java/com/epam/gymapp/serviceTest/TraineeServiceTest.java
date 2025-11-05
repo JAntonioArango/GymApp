@@ -55,7 +55,7 @@ class TraineeServiceTest {
   }
 
   @Test
-  void createProfile_shouldSaveAndReturnDto() {
+  void createProfile_validTraineeDto_savedTraineeDtoReturned() {
     when(creds.buildUniqueUsername("John", "Doe")).thenReturn("jdoe");
     when(creds.randomPassword()).thenReturn("ignoredRawPwd");
 
@@ -73,7 +73,7 @@ class TraineeServiceTest {
   }
 
   @Test
-  void register_shouldReturnRegistrationDtoWithRawPassword() {
+  void register_validTraineeDto_registrationDtoWithRawPassword() {
     when(creds.randomPassword()).thenReturn("rawPass123");
     when(creds.buildUniqueUsername("John", "Doe")).thenReturn("john.doe");
     when(traineeRepo.save(any(Trainee.class)))
@@ -92,7 +92,7 @@ class TraineeServiceTest {
   }
 
   @Test
-  void findProfile_shouldMapTrainersCorrectly() {
+  void findProfile_existingTraineeWithTrainers_profileDtoWithMappedTrainers() {
     User traineeUser = new User();
     traineeUser.setUsername("trainee1");
     traineeUser.setFirstName("John");
@@ -126,7 +126,7 @@ class TraineeServiceTest {
   }
 
   @Test
-  void updateProfile_shouldNotThrowExceptionDueToBuggyComparison() {
+  void updateProfile_existingUsernameConflict_noExceptionDueToBuggyComparison() {
     Trainee existingTrainee = new Trainee();
     existingTrainee.setId(1L);
     User existingUser = new User();

@@ -26,7 +26,7 @@ class TrainerEntityTest {
   }
 
   @Test
-  void testNoArgsConstructor() {
+  void constructor_noArgs_defaultValuesAndEmptyCollections() {
     assertNotNull(trainer);
     assertNotNull(trainer.getTrainees());
     assertNotNull(trainer.getTrainings());
@@ -35,7 +35,7 @@ class TrainerEntityTest {
   }
 
   @Test
-  void testAllArgsConstructor() {
+  void constructor_allArgs_fieldsSetCorrectly() {
     Set<Trainee> trainees = new HashSet<>();
     Set<Training> trainings = new HashSet<>();
 
@@ -49,25 +49,25 @@ class TrainerEntityTest {
   }
 
   @Test
-  void testSetAndGetId() {
+  void setId_validId_idStored() {
     trainer.setId(1L);
     assertEquals(1L, trainer.getId());
   }
 
   @Test
-  void testSetAndGetSpecialization() {
+  void setSpecialization_validSpecialization_specializationStored() {
     trainer.setSpecialization(specialization);
     assertEquals(specialization, trainer.getSpecialization());
   }
 
   @Test
-  void testSetAndGetUser() {
+  void setUser_validUser_userStored() {
     trainer.setUser(user);
     assertEquals(user, trainer.getUser());
   }
 
   @Test
-  void testAddAndRemoveTrainee() {
+  void trainees_addAndRemove_collectionUpdated() {
     Trainee trainee = new Trainee();
 
     trainer.getTrainees().add(trainee);
@@ -80,7 +80,7 @@ class TrainerEntityTest {
   }
 
   @Test
-  void testAddAndRemoveTraining() {
+  void trainings_addAndRemove_collectionUpdated() {
     Training training = new Training();
 
     trainer.getTrainings().add(training);
@@ -93,14 +93,14 @@ class TrainerEntityTest {
   }
 
   @Test
-  void testTraineesInitializedAsEmptySet() {
+  void getTrainees_newInstance_emptySetInitialized() {
     Trainer newTrainer = new Trainer();
     assertNotNull(newTrainer.getTrainees());
     assertTrue(newTrainer.getTrainees().isEmpty());
   }
 
   @Test
-  void testTrainingsInitializedAsEmptySet() {
+  void getTrainings_newInstance_emptySetInitialized() {
     Trainer newTrainer = new Trainer();
     assertNotNull(newTrainer.getTrainings());
     assertTrue(newTrainer.getTrainings().isEmpty());

@@ -25,7 +25,7 @@ class TraineeEntityTest {
   }
 
   @Test
-  void testNoArgsConstructor() {
+  void constructor_noArgs_defaultValuesAndEmptyCollections() {
     assertNotNull(trainee);
     assertNull(trainee.getId());
     assertNull(trainee.getDateOfBirth());
@@ -38,7 +38,7 @@ class TraineeEntityTest {
   }
 
   @Test
-  void testAllArgsConstructor() {
+  void constructor_allArgs_fieldsSetCorrectly() {
     Set<Trainer> trainers = new HashSet<>();
     Set<Training> trainings = new HashSet<>();
 
@@ -53,32 +53,32 @@ class TraineeEntityTest {
   }
 
   @Test
-  void testSetAndGetId() {
+  void setId_validId_idStored() {
     trainee.setId(1L);
     assertEquals(1L, trainee.getId());
   }
 
   @Test
-  void testSetAndGetDateOfBirth() {
+  void setDateOfBirth_validDate_dateStored() {
     trainee.setDateOfBirth(testDate);
     assertEquals(testDate, trainee.getDateOfBirth());
   }
 
   @Test
-  void testSetAndGetAddress() {
+  void setAddress_validAddress_addressStored() {
     String address = "456 Test Avenue";
     trainee.setAddress(address);
     assertEquals(address, trainee.getAddress());
   }
 
   @Test
-  void testSetAndGetUser() {
+  void setUser_validUser_userStored() {
     trainee.setUser(user);
     assertEquals(user, trainee.getUser());
   }
 
   @Test
-  void testAddAndRemoveTrainer() {
+  void trainers_addAndRemove_collectionUpdated() {
     Trainer trainer = new Trainer();
 
     trainee.getTrainers().add(trainer);
@@ -91,7 +91,7 @@ class TraineeEntityTest {
   }
 
   @Test
-  void testAddAndRemoveTraining() {
+  void trainings_addAndRemove_collectionUpdated() {
     Training training = new Training();
 
     trainee.getTrainings().add(training);
@@ -104,21 +104,21 @@ class TraineeEntityTest {
   }
 
   @Test
-  void testTrainersInitializedAsEmptySet() {
+  void getTrainers_newInstance_emptySetInitialized() {
     Trainee newTrainee = new Trainee();
     assertNotNull(newTrainee.getTrainers());
     assertTrue(newTrainee.getTrainers().isEmpty());
   }
 
   @Test
-  void testTrainingsInitializedAsEmptySet() {
+  void getTrainings_newInstance_emptySetInitialized() {
     Trainee newTrainee = new Trainee();
     assertNotNull(newTrainee.getTrainings());
     assertTrue(newTrainee.getTrainings().isEmpty());
   }
 
   @Test
-  void testMultipleTrainersAndTrainings() {
+  void collections_multipleItems_correctSizesMaintained() {
     Trainer trainer1 = new Trainer();
     Trainer trainer2 = new Trainer();
     Training training1 = new Training();
@@ -134,7 +134,7 @@ class TraineeEntityTest {
   }
 
   @Test
-  void testCascadeOperations() {
+  void training_cascadeOperation_bidirectionalRelationshipMaintained() {
     Training training = new Training();
     training.setTrainee(trainee);
     trainee.getTrainings().add(training);

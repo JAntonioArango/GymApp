@@ -36,7 +36,7 @@ class GlobalExceptionHandlerTest {
   }
 
   @Test
-  void handleApiException_ShouldReturnCorrectResponseEntity() {
+  void handleApiException_apiException_correctResponseEntityReturned() {
     HttpStatus expectedStatus = HttpStatus.NOT_FOUND;
     String expectedMessage = "Resource not found";
     ApiException apiException = new ApiException(expectedStatus, expectedMessage);
@@ -51,7 +51,7 @@ class GlobalExceptionHandlerTest {
   }
 
   @Test
-  void handleValidation_ShouldReturnCorrectResponseEntity() {
+  void handleValidation_validationException_badRequestResponseReturned() {
     List<FieldError> fieldErrors =
         List.of(
             new FieldError("object", "field1", "must not be blank"),
@@ -70,7 +70,7 @@ class GlobalExceptionHandlerTest {
   }
 
   @Test
-  void handleAll_ShouldReturnCorrectResponseEntity() {
+  void handleAll_unexpectedException_internalServerErrorReturned() {
     String expectedMessage = "Unexpected error";
     Exception exception = new RuntimeException(expectedMessage);
 

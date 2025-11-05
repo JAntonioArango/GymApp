@@ -27,7 +27,7 @@ class JwtServiceTest {
   }
 
   @Test
-  void parse_delegatesToDecoderAndReturnsJwt() {
+  void parse_validToken_decodedJwtReturned() {
     String token = "some-jwt";
     Jwt jwt = mock(Jwt.class);
     when(decoder.decode(token)).thenReturn(jwt);

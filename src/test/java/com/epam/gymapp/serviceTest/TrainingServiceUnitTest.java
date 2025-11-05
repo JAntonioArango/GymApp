@@ -59,7 +59,7 @@ class TrainingServiceUnitTest {
   }
 
   @Test
-  void addTraining_shouldFetchEntitiesAndSave() {
+  void addTraining_validTrainingDto_entitiesFetchedAndTrainingSaved() {
     when(traineeRepo.findByUserUsername("traineeUser")).thenReturn(Optional.of(mockTrainee));
     when(trainerRepo.findByUserUsername("trainerUser")).thenReturn(Optional.of(mockTrainer));
 
@@ -79,7 +79,7 @@ class TrainingServiceUnitTest {
   }
 
   @Test
-  void listByTrainer_shouldMapEntitiesToDto() {
+  void listByTrainer_validTrainerUsername_entitiesMappedToDtos() {
     Training one =
         new Training(1L, mockTrainee, mockTrainer, mockType, "name1", LocalDate.now(), 30, true);
     when(trainingRepo.findByTrainerUserUsername("trainerUser")).thenReturn(List.of(one));
@@ -96,7 +96,7 @@ class TrainingServiceUnitTest {
   }
 
   @Test
-  void listByTrainee_shouldInvokeRepoAndReturnDtos() {
+  void listByTrainee_validTraineeUsername_repositoryInvokedAndDtosReturned() {
     TrainingDto td =
         new TrainingDto(
             2L, "u", "t", "f", "l", Specialization.CARDIO, "n", LocalDate.now(), 20, true);
@@ -109,7 +109,7 @@ class TrainingServiceUnitTest {
   }
 
   @Test
-  void listTrainingTypes_shouldConvertEntitiesToDto() {
+  void listTrainingTypes_noParameters_entitiesConvertedToDtos() {
     TrainingType t1 = new TrainingType();
     t1.setId(10L);
     t1.setName(Specialization.CARDIO);
@@ -120,7 +120,7 @@ class TrainingServiceUnitTest {
   }
 
   @Test
-  void trainingFilter_accessors_andBlankToNull() {
+  void trainingFilter_blankAndNullValues_blankValuesConvertedToNull() {
     TrainingService.TrainingFilter f =
         new TrainingService.TrainingFilter(null, null, "  ", "name", "");
     assertNull(f.trainerNameOrNull());
@@ -129,7 +129,7 @@ class TrainingServiceUnitTest {
   }
 
   @Test
-  void trainerTrainings_nullFilter_usesEmptyAndReturnsPage() {
+  void trainerTrainings_nullFilter_emptyFilterUsedAndPageReturned() {
     when(trainerRepo.findByUserUsername("trainer1")).thenReturn(Optional.of(mockTrainer));
 
     List<TrainerTrainingDto> data =

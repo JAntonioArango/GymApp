@@ -22,7 +22,7 @@ class CredentialGeneratorTest {
   @InjectMocks private CredentialGenerator generator;
 
   @Test
-  void randomPassword_shouldGeneratePasswordWithCorrectLength() {
+  void randomPassword_noParameters_tenCharacterAlphanumericPassword() {
     String password = generator.randomPassword();
     assertNotNull(password);
     assertEquals(10, password.length());
@@ -30,7 +30,7 @@ class CredentialGeneratorTest {
   }
 
   @Test
-  void randomPassword_shouldGenerateUniquePasswords() {
+  void randomPassword_multipleGenerations_uniquePasswordsGenerated() {
     Set<String> passwords = new HashSet<>();
     for (int i = 0; i < 100; i++) {
       passwords.add(generator.randomPassword());
@@ -39,7 +39,7 @@ class CredentialGeneratorTest {
   }
 
   @Test
-  void buildUniqueUsername_shouldGenerateValidFormat_whenNoCollision() {
+  void buildUniqueUsername_noCollision_validFormattedUsername() {
     when(userRepository.existsByUsername(anyString())).thenReturn(false);
     String username = generator.buildUniqueUsername("John", "Doe");
     assertTrue(username.matches("john\\.doe-[0-9a-f]{8}"));
@@ -47,7 +47,7 @@ class CredentialGeneratorTest {
   }
 
   @Test
-  void buildUniqueUsername_shouldHandleExistingUsername() {
+  void buildUniqueUsername_singleCollision_uniqueUsernameGenerated() {
     when(userRepository.existsByUsername(anyString())).thenReturn(true).thenReturn(false);
 
     String username = generator.buildUniqueUsername("John", "Doe");
@@ -57,7 +57,7 @@ class CredentialGeneratorTest {
   }
 
   @Test
-  void buildUniqueUsername_shouldHandleMultipleExistingUsernames() {
+  void buildUniqueUsername_multipleCollisions_uniqueUsernameEventuallyGenerated() {
     when(userRepository.existsByUsername(anyString()))
         .thenReturn(true, true, true, true, true)
         .thenReturn(false);
@@ -69,7 +69,7 @@ class CredentialGeneratorTest {
   }
 
   @Test
-  void buildUniqueUsername_shouldHandleDifferentCases() {
+  void buildUniqueUsername_differentCases_lowercaseUsernamesWithDifferentSuffixes() {
     when(userRepository.existsByUsername(anyString())).thenReturn(false);
 
     String username1 = generator.buildUniqueUsername("JOHN", "DOE");
@@ -81,7 +81,7 @@ class CredentialGeneratorTest {
   }
 
   @Test
-  void buildUniqueUsername_shouldHandleSpecialCharacters() {
+  void buildUniqueUsername_specialCharacters_specialCharactersPreservedInUsername() {
     when(userRepository.existsByUsername(anyString())).thenReturn(false);
 
     String username = generator.buildUniqueUsername("O'Neil-Smith", "Van der Berg");

@@ -44,7 +44,7 @@ class TrainerServiceTest {
   }
 
   @Test
-  void createProfile_shouldLoadTypeSaveAndReturnDto() {
+  void createProfile_validTrainerDto_trainingTypeLoadedAndTrainerDtoReturned() {
     when(creds.buildUniqueUsername("Alice", "Smith")).thenReturn("asmith");
     when(typeRepo.findByName(Specialization.CARDIO))
         .thenReturn(Optional.of(new TrainingType(1L, Specialization.CARDIO, null)));
@@ -60,7 +60,7 @@ class TrainerServiceTest {
   }
 
   @Test
-  void register_shouldCreateUserAndTrainerWithEncodedPassword() {
+  void register_validTrainerDto_userAndTrainerCreatedWithEncodedPassword() {
     when(creds.randomPassword()).thenReturn("Pass123");
     when(creds.buildUniqueUsername("Alice", "Smith")).thenReturn("asmith");
     when(passwordEncoder.encode("Pass123")).thenReturn("encodedPass123");
@@ -79,7 +79,7 @@ class TrainerServiceTest {
   }
 
   @Test
-  void register_shouldSetUserFieldsCorrectly() {
+  void register_validTrainerDto_userFieldsSetCorrectly() {
     when(creds.randomPassword()).thenReturn("Pass123");
     when(creds.buildUniqueUsername("Alice", "Smith")).thenReturn("asmith");
     when(passwordEncoder.encode("Pass123")).thenReturn("encodedPass123");
@@ -104,7 +104,7 @@ class TrainerServiceTest {
   }
 
   @Test
-  void updateProfile_shouldThrowRuntimeExceptionWhenUsernameExists() {
+  void updateProfile_existingUsernameConflict_runtimeExceptionThrown() {
     UpdateTrainerDto updateDto =
         new UpdateTrainerDto("existinguser", "Alice", "Smith", Specialization.CARDIO, true);
 
@@ -122,7 +122,7 @@ class TrainerServiceTest {
   }
 
   @Test
-  void findProfile_shouldMapTraineesCorrectly() {
+  void findProfile_trainerWithTrainees_profileDtoWithMappedTrainees() {
     User trainerUser = new User();
     trainerUser.setUsername("trainer1");
     trainerUser.setFirstName("John");

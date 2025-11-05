@@ -17,7 +17,7 @@ class UserEntityTest {
   }
 
   @Test
-  void testNoArgsConstructor() {
+  void constructor_noArgs_defaultValuesSet() {
     assertNotNull(user);
     assertNull(user.getId());
     assertNull(user.getFirstName());
@@ -30,7 +30,7 @@ class UserEntityTest {
   }
 
   @Test
-  void testAllArgsConstructor() {
+  void constructor_allArgs_fieldsSetCorrectly() {
     Trainer trainer = new Trainer();
     Trainee trainee = new Trainee();
 
@@ -47,37 +47,37 @@ class UserEntityTest {
   }
 
   @Test
-  void testSetAndGetId() {
+  void setId_validId_idStored() {
     user.setId(1L);
     assertEquals(1L, user.getId());
   }
 
   @Test
-  void testSetAndGetFirstName() {
+  void setFirstName_validName_firstNameStored() {
     user.setFirstName("John");
     assertEquals("John", user.getFirstName());
   }
 
   @Test
-  void testSetAndGetLastName() {
+  void setLastName_validName_lastNameStored() {
     user.setLastName("Doe");
     assertEquals("Doe", user.getLastName());
   }
 
   @Test
-  void testSetAndGetUsername() {
+  void setUsername_validUsername_usernameStored() {
     user.setUsername("johndoe");
     assertEquals("johndoe", user.getUsername());
   }
 
   @Test
-  void testSetAndGetPassword() {
+  void setPassword_validPassword_passwordStored() {
     user.setPassword("password123");
     assertEquals("password123", user.getPassword());
   }
 
   @Test
-  void testSetAndGetIsActive() {
+  void setActive_booleanValues_activeStatusUpdated() {
     user.setActive(false);
     assertFalse(user.isActive());
 
@@ -86,27 +86,27 @@ class UserEntityTest {
   }
 
   @Test
-  void testDefaultIsActiveValue() {
+  void isActive_newUser_defaultTrueValue() {
     User newUser = new User();
     assertTrue(newUser.isActive());
   }
 
   @Test
-  void testSetAndGetTrainer() {
+  void setTrainer_validTrainer_trainerStored() {
     Trainer trainer = new Trainer();
     user.setTrainer(trainer);
     assertEquals(trainer, user.getTrainer());
   }
 
   @Test
-  void testSetAndGetTrainee() {
+  void setTrainee_validTrainee_traineeStored() {
     Trainee trainee = new Trainee();
     user.setTrainee(trainee);
     assertEquals(trainee, user.getTrainee());
   }
 
   @Test
-  void testUniqueUsernameConstraint() {
+  void equals_sameUsername_objectsNotEqual() {
     User user1 = new User();
     user1.setUsername("uniqueusername");
 
@@ -117,7 +117,7 @@ class UserEntityTest {
   }
 
   @Test
-  void testUserWithNoTrainerOrTrainee() {
+  void getTrainer_newUser_nullTrainerAndTrainee() {
     User user = new User();
     assertNull(user.getTrainer());
     assertNull(user.getTrainee());

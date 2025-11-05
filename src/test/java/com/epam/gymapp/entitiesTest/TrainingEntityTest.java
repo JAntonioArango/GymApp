@@ -28,7 +28,7 @@ class TrainingEntityTest {
   }
 
   @Test
-  void testNoArgsConstructor() {
+  void constructor_noArgs_defaultNullValues() {
     assertNotNull(training);
     assertNull(training.getId());
     assertNull(training.getTrainee());
@@ -40,7 +40,7 @@ class TrainingEntityTest {
   }
 
   @Test
-  void testAllArgsConstructor() {
+  void constructor_allArgs_fieldsSetCorrectly() {
     Training training =
         new Training(1L, trainee, trainer, trainingType, "Test Training", testDate, 60, true);
 
@@ -54,64 +54,64 @@ class TrainingEntityTest {
   }
 
   @Test
-  void testSetAndGetId() {
+  void setId_validId_idStored() {
     training.setId(1L);
     assertEquals(1L, training.getId());
   }
 
   @Test
-  void testSetAndGetTrainee() {
+  void setTrainee_validTrainee_traineeStored() {
     training.setTrainee(trainee);
     assertEquals(trainee, training.getTrainee());
   }
 
   @Test
-  void testSetAndGetTrainer() {
+  void setTrainer_validTrainer_trainerStored() {
     training.setTrainer(trainer);
     assertEquals(trainer, training.getTrainer());
   }
 
   @Test
-  void testSetAndGetTrainingType() {
+  void setTrainingType_validType_trainingTypeStored() {
     training.setTrainingType(trainingType);
     assertEquals(trainingType, training.getTrainingType());
   }
 
   @Test
-  void testSetAndGetTrainingName() {
+  void setTrainingName_validName_trainingNameStored() {
     String trainingName = "Test Training Session";
     training.setTrainingName(trainingName);
     assertEquals(trainingName, training.getTrainingName());
   }
 
   @Test
-  void testSetAndGetTrainingDate() {
+  void setTrainingDate_validDate_trainingDateStored() {
     training.setTrainingDate(testDate);
     assertEquals(testDate, training.getTrainingDate());
   }
 
   @Test
-  void testSetAndGetTrainingDuration() {
+  void setTrainingDuration_validDuration_trainingDurationStored() {
     Integer duration = 45;
     training.setTrainingDuration(duration);
     assertEquals(duration, training.getTrainingDuration());
   }
 
   @Test
-  void testTrainingDateFormat() {
+  void getTrainingDate_validDate_correctStringFormat() {
     LocalDate date = LocalDate.of(2024, 1, 1);
     training.setTrainingDate(date);
     assertEquals("2024-01-01", training.getTrainingDate().toString());
   }
 
   @Test
-  void testValidTrainingDuration() {
+  void setTrainingDuration_positiveDuration_validDurationStored() {
     training.setTrainingDuration(30);
     assertTrue(training.getTrainingDuration() > 0);
   }
 
   @Test
-  void testRequiredFieldsNotNull() {
+  void constructor_allRequiredFields_requiredFieldsNotNull() {
     Training fullTraining =
         new Training(1L, trainee, trainer, trainingType, "Test Training", testDate, 60, true);
 
@@ -121,7 +121,7 @@ class TrainingEntityTest {
   }
 
   @Test
-  void testContentEquality() {
+  void equals_sameContent_objectsEqual() {
     Training training1 =
         new Training(1L, trainee, trainer, trainingType, "Training 1", testDate, 60, true);
     Training training2 =

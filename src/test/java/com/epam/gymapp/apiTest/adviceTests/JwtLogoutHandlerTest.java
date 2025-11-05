@@ -38,7 +38,7 @@ class JwtLogoutHandlerTest {
   }
 
   @Test
-  void whenNoAuthorizationHeader_thenRespondUnauthorizedAndDoNotSave() {
+  void logout_noAuthorizationHeader_unauthorizedResponseAndNoTokenSaved() {
     when(req.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn(null);
 
     handler.logout(req, res, auth);
@@ -49,7 +49,7 @@ class JwtLogoutHandlerTest {
   }
 
   @Test
-  void whenAuthorizationHeaderNotBearer_thenRespondUnauthorizedAndDoNotSave() {
+  void logout_nonBearerAuthorizationHeader_unauthorizedResponseAndNoTokenSaved() {
     when(req.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn("Basic xyz");
 
     handler.logout(req, res, auth);
@@ -60,7 +60,7 @@ class JwtLogoutHandlerTest {
   }
 
   @Test
-  void whenBearerToken_thenParseAndSaveRevokedToken() {
+  void logout_validBearerToken_tokenParsedAndRevokedTokenSaved() {
     String token = "token-123";
     Instant expiresAt = Instant.now().plusSeconds(3600);
 

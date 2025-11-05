@@ -32,7 +32,7 @@ class RevocationFilterTest {
   }
 
   @Test
-  void whenNoAuthorizationHeader_thenChainCalled() throws ServletException, IOException {
+  void doFilter_noAuthorizationHeader_filterChainCalled() throws ServletException, IOException {
     when(req.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn(null);
 
     filter.doFilter(req, res, chain);
@@ -42,7 +42,8 @@ class RevocationFilterTest {
   }
 
   @Test
-  void whenAuthorizationHeaderNotBearer_thenChainCalled() throws ServletException, IOException {
+  void doFilter_nonBearerAuthorizationHeader_filterChainCalled()
+      throws ServletException, IOException {
     when(req.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn("Basic abcdef");
 
     filter.doFilter(req, res, chain);
@@ -52,7 +53,7 @@ class RevocationFilterTest {
   }
 
   @Test
-  void whenBearerTokenNotRevoked_thenChainCalled() throws ServletException, IOException {
+  void doFilter_validBearerToken_filterChainCalled() throws ServletException, IOException {
     String token = "valid-token";
     when(req.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn("Bearer " + token);
     when(repo.existsById(token)).thenReturn(false);
@@ -64,7 +65,7 @@ class RevocationFilterTest {
   }
 
   @Test
-  void whenBearerTokenRevoked_thenSendUnauthorizedAndDoNotCallChain()
+  void doFilter_revokedBearerToken_unauthorizedErrorSentAndChainNotCalled()
       throws ServletException, IOException {
     String token = "revoked-token";
     when(req.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn("Bearer " + token);

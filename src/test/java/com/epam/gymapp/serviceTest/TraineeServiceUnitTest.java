@@ -39,7 +39,7 @@ class TraineeServiceUnitTest {
   }
 
   @Test
-  void updateProfile_shouldModifyAndReturnProfile() {
+  void updateProfile_validUpdateData_profileModifiedAndReturned() {
     UpdateTraineeDto upd =
         new UpdateTraineeDto("AliceT", "Alice", "Smith", null, "New Addr", false);
     Trainee t = new Trainee();
@@ -58,7 +58,7 @@ class TraineeServiceUnitTest {
   }
 
   @Test
-  void deleteByUsername_shouldDetachAndDelete() {
+  void deleteByUsername_existingTrainee_traineeDetachedAndDeleted() {
     Trainee t = spy(new Trainee());
     when(traineeRepo.findByUserUsername("u")).thenReturn(Optional.of(t));
 
@@ -68,7 +68,7 @@ class TraineeServiceUnitTest {
   }
 
   @Test
-  void setActive_shouldToggleAndReturnDto() {
+  void setActive_validStatusChange_activeStatusToggledAndDtoReturned() {
     Trainee t = new Trainee();
     User u = new User();
     u.setActive(false);
@@ -80,7 +80,7 @@ class TraineeServiceUnitTest {
   }
 
   @Test
-  void findProfile_shouldMapToProfileDto() {
+  void findProfile_existingTrainee_profileDtoMappedAndReturned() {
     Trainee t = new Trainee();
     User u = new User();
     u.setUsername("u");
@@ -98,7 +98,7 @@ class TraineeServiceUnitTest {
   }
 
   @Test
-  void replaceTrainers_shouldReplaceAndReturnShortDtos() {
+  void replaceTrainers_validTrainerUsernames_trainersReplacedAndShortDtosReturned() {
     Trainee t = new Trainee();
     when(traineeRepo.findByUserUsername("u")).thenReturn(Optional.of(t));
     Trainer tr1 = new Trainer();
@@ -115,7 +115,7 @@ class TraineeServiceUnitTest {
   }
 
   @Test
-  void replaceTrainers_shouldThrowWhenMissing() {
+  void replaceTrainers_nonExistentTrainers_apiExceptionThrown() {
     Trainee trainee = new Trainee();
     when(traineeRepo.findByUserUsername("u")).thenReturn(Optional.of(trainee));
 

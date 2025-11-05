@@ -287,6 +287,14 @@
                         </goals>
                         <configuration>
                             <skip>false</skip>
+                            <excludes>
+                                <exclude>**/api/dto/**</exclude>
+                                <exclude>**/config/**</exclude>
+                                <exclude>**/GymApplication.class</exclude>
+                                <exclude>**/exception/**</exclude>
+                                <exclude>**/constants/**</exclude>
+                                <exclude>**/activemq/**</exclude>
+                            </excludes>
                             <rules>
                                 <rule>
                                     <element>BUNDLE</element>

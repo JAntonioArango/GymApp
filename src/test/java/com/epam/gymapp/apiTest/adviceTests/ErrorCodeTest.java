@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 
 class ErrorCodeTest {
   @Test
-  void testErrorCodeProperties() {
+  void getStatus_allErrorCodes_correctHttpStatusReturned() {
     assertEquals(HttpStatus.NOT_FOUND, ErrorCode.RESOURCE_NOT_FOUND.getStatus());
     assertEquals("Resource Not Found", ErrorCode.RESOURCE_NOT_FOUND.getTitle());
 

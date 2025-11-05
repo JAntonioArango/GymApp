@@ -52,7 +52,7 @@ class TrainerServiceUnitTest {
   }
 
   @Test
-  void createProfile_shouldSaveAndReturnDto() {
+  void createProfile_validTrainerDto_trainerSavedAndDtoReturned() {
     when(typeRepo.findByName(Specialization.YOGA)).thenReturn(Optional.of(mockType));
     when(creds.buildUniqueUsername("John", "Doe")).thenReturn("john.x123");
     when(creds.randomPassword()).thenReturn("pwd123");
@@ -64,7 +64,7 @@ class TrainerServiceUnitTest {
   }
 
   @Test
-  void findByUsername_shouldReturnDtoOrThrow() {
+  void findByUsername_existingAndNonExistingUsername_dtoReturnedOrExceptionThrown() {
     when(trainerRepo.findByUserUsername("u")).thenReturn(Optional.of(savedTrainer));
     TrainerDto dto = service.findByUsername("u");
     assertNotEquals("u", dto.username());
@@ -74,7 +74,7 @@ class TrainerServiceUnitTest {
   }
 
   @Test
-  void updateProfile_shouldModifyAndReturnProfile() {
+  void updateProfile_validUpdateData_profileModifiedAndReturned() {
     UpdateTrainerDto upd =
         new UpdateTrainerDto("AliceTrainer", "Alice", "Smith", Specialization.BOXING, false);
     savedTrainer.getUser().setFirstName("Old");
@@ -89,7 +89,7 @@ class TrainerServiceUnitTest {
   }
 
   @Test
-  void changePassword_shouldValidateAndChangeOrThrow() {
+  void changePassword_validAndInvalidCredentials_passwordChangedOrExceptionThrown() {
     when(trainerRepo.existsByUserUsernameAndUserPassword("u", "old")).thenReturn(false);
     assertThrows(ApiException.class, () -> service.changePassword("u", "old", "new"));
 
@@ -100,7 +100,7 @@ class TrainerServiceUnitTest {
   }
 
   @Test
-  void setActive_shouldToggleAndReturnDto() {
+  void setActive_validStatusChange_activeStatusToggledAndDtoReturned() {
     savedTrainer.getUser().setActive(false);
     when(trainerRepo.findByUserUsername("u")).thenReturn(Optional.of(savedTrainer));
     TrainerDto dto = service.setActive("u", true);
@@ -108,7 +108,7 @@ class TrainerServiceUnitTest {
   }
 
   @Test
-  void list_shouldReturnPagedDtos() {
+  void list_validPagination_pagedTrainerDtosReturned() {
     savedTrainer.setId(5L);
     when(trainerRepo.findAll(PageRequest.of(0, 2)))
         .thenReturn(new PageImpl<>(List.of(savedTrainer)));
@@ -119,7 +119,7 @@ class TrainerServiceUnitTest {
   }
 
   @Test
-  void findProfile_shouldMapToProfileDto() {
+  void findProfile_existingTrainer_profileDtoMappedAndReturned() {
     when(trainerRepo.findByUserUsername("u")).thenReturn(Optional.of(savedTrainer));
     TrainerProfileDto pd = service.findProfile("u");
     assertNotEquals("u", pd.username());
@@ -127,7 +127,7 @@ class TrainerServiceUnitTest {
   }
 
   @Test
-  void unassignedActiveTrainers_shouldFilterAndReturnShortDtos() {
+  void unassignedActiveTrainers_traineeWithAssignedTrainers_unassignedActiveTrainersFiltered() {
     when(traineeRepo.findByUserUsername("trainee")).thenReturn(Optional.of(new Trainee()));
 
     Trainer assigned = new Trainer();

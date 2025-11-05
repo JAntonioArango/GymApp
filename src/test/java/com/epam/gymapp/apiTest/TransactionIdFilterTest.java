@@ -39,14 +39,16 @@ class TransactionIdFilterTest {
   }
 
   @Test
-  void shouldCleanupMDCAfterExecution() throws ServletException, IOException {
+  void doFilterInternal_normalExecution_mdcCleanedUpAfterExecution()
+      throws ServletException, IOException {
     filter.doFilterInternal(request, response, filterChain);
 
     assertNull(MDC.get("txId"), "MDC should be cleaned up after filter execution");
   }
 
   @Test
-  void shouldCleanupMDCEvenWhenExceptionOccurs() throws ServletException, IOException {
+  void doFilterInternal_exceptionThrown_mdcCleanedUpEvenAfterException()
+      throws ServletException, IOException {
     doThrow(new RuntimeException("Test exception")).when(filterChain).doFilter(request, response);
 
     assertThrows(
@@ -55,7 +57,8 @@ class TransactionIdFilterTest {
   }
 
   @Test
-  void shouldCalculateElapsedTime() throws ServletException, IOException {
+  void doFilterInternal_transactionIdHeader_elapsedTimeCalculatedAndChainCalled()
+      throws ServletException, IOException {
     String txId = "test-transaction-id";
     request.addHeader("X-Transaction-Id", txId);
 

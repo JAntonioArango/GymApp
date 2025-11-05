@@ -39,7 +39,7 @@ class TraineeControllerTest {
   }
 
   @Test
-  void create_shouldReturn201WithCredentials() {
+  void create_validTraineeDto_createdStatusWithRegistrationCredentials() {
     CreateTraineeDto in =
         new CreateTraineeDto("John", "Doe", LocalDate.of(1990, 1, 1), "Address 1");
     TraineeRegistrationDto out = new TraineeRegistrationDto("john.doe-1234", "pass");
@@ -53,21 +53,21 @@ class TraineeControllerTest {
   }
 
   @Test
-  void delete_shouldInvokeServiceAndReturnOK() {
+  void delete_validUsername_serviceCalledAndOkStatus() {
     ResponseEntity<Void> resp = controller.delete("john");
     assertEquals(HttpStatus.OK, resp.getStatusCode());
     verify(traineeService).deleteByUsername("john");
   }
 
   @Test
-  void setActive_shouldCallServiceAndReturnOK() {
+  void setActive_validUsernameAndStatus_serviceCalledAndOkStatus() {
     ResponseEntity<Void> resp = controller.setActive("john", true);
     assertEquals(HttpStatus.OK, resp.getStatusCode());
     verify(traineeService).setActive("john", true);
   }
 
   @Test
-  void replaceTrainers_shouldReturnWrappedList() {
+  void replaceTrainers_validTrainersList_updatedTrainersListReturned() {
     List<String> trainerUsernames = List.of("sara.maria");
     UpdateTraineeTrainersDto body = new UpdateTraineeTrainersDto(trainerUsernames);
     List<TrainerShortDto> trainers =
@@ -80,7 +80,7 @@ class TraineeControllerTest {
   }
 
   @Test
-  void list_shouldReturnPageContentWrapped() {
+  void list_validPagination_traineeListReturned() {
     List<TraineeDto> dtos =
         List.of(new TraineeDto("john", "John", "Doe", LocalDate.of(1990, 1, 1), "Address", true));
     when(traineeService.list(PageRequest.of(0, 20))).thenReturn(new PageImpl<>(dtos));

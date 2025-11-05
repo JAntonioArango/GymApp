@@ -33,7 +33,7 @@ class AuthControllerTest {
   @InjectMocks private AuthController controller;
 
   @Test
-  void login_success_returnsTokenDto() {
+  void login_validCredentials_tokenDtoWithOkStatus() {
     String username = "john";
     String password = "secret";
     String token = "jwt.token.here";
@@ -50,7 +50,7 @@ class AuthControllerTest {
   }
 
   @Test
-  void logout_success_revokesTokenAndReturnsNoContent() {
+  void logout_validToken_tokenRevokedAndNoContentStatus() {
     String token = "Bearer jwt.token.here";
     String jwtToken = "jwt.token.here";
     Instant expiresAt = Instant.now().plusSeconds(3600);
@@ -74,7 +74,7 @@ class AuthControllerTest {
   }
 
   @Test
-  void changePassword_success_returnsOk() {
+  void changePassword_validPasswordChange_okStatus() {
     String username = "alice";
     ChangePasswordDto dto = new ChangePasswordDto("oldPass", "newPass");
 

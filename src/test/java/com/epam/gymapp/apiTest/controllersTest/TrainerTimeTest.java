@@ -46,7 +46,7 @@ class TrainerTimeTest {
   }
 
   @Test
-  void create_shouldRecordTimerAndReturn201() {
+  void create_validTrainerDto_timerRecordedAndCreatedStatusReturned() {
     CreateTrainerDto requestDto = new CreateTrainerDto("Alice", "Smith", Specialization.CARDIO);
 
     TrainerRegistrationDto fakeResponse =

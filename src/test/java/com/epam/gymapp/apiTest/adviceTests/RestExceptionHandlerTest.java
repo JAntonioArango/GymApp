@@ -24,7 +24,7 @@ class RestExceptionHandlerTest {
   }
 
   @Test
-  void testHandleEntityNotFound() {
+  void notFound_entityNotFoundException_notFoundProblemDetailReturned() {
     EntityNotFoundException ex = new EntityNotFoundException("TestEntity");
     ResponseEntity<ProblemDetail> response = handler.notFound(ex, request);
     ProblemDetail pd = response.getBody();
@@ -36,7 +36,7 @@ class RestExceptionHandlerTest {
   }
 
   @Test
-  void testHandleApiException() {
+  void apiError_apiException_problemDetailWithCorrectStatusReturned() {
     ApiException ex = ApiException.badRequest("Bad things happened");
     ResponseEntity<ProblemDetail> response = handler.apiError(ex, request);
     ProblemDetail pd = response.getBody();

@@ -11,14 +11,16 @@ import org.springframework.jms.config.JmsListenerContainerFactory;
 @EnableJms
 public class JmsConfig {
 
-    @Bean
-    public JmsListenerContainerFactory<?> jmsListenerContainerFactory(ConnectionFactory connectionFactory) {
-        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
-        factory.setConnectionFactory(connectionFactory);
-        factory.setConcurrency("1-1");
-        factory.setErrorHandler(t -> {
-            System.err.println("An error has occurred in the transaction: " + t.getMessage());
+  @Bean
+  public JmsListenerContainerFactory<?> jmsListenerContainerFactory(
+      ConnectionFactory connectionFactory) {
+    DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+    factory.setConnectionFactory(connectionFactory);
+    factory.setConcurrency("1-1");
+    factory.setErrorHandler(
+        t -> {
+          System.err.println("An error has occurred in the transaction: " + t.getMessage());
         });
-        return factory;
-    }
+    return factory;
+  }
 }

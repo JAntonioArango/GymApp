@@ -50,7 +50,7 @@ class AuthenticationServiceTest {
   }
 
   @Test
-  void validate_successfulAuthentication_setsSecurityContext_resetsAttempts_and_returnsUser() {
+  void validate_validCredentials_securityContextSetAndUserReturned() {
     String username = "john";
     String rawPassword = "secret";
 
@@ -76,7 +76,7 @@ class AuthenticationServiceTest {
   }
 
   @Test
-  void validate_badCredentials_recordsFailure_andThrowsApiException() {
+  void validate_invalidCredentials_failureRecordedAndApiExceptionThrown() {
     String username = "joe";
     String rawPassword = "wrong";
 
@@ -96,7 +96,7 @@ class AuthenticationServiceTest {
   }
 
   @Test
-  void changePassword_success_encodesAndSetsNewPassword() {
+  void changePassword_validUsernameAndPassword_passwordEncodedAndUpdated() {
     String username = "alice";
     String newPassword = "new-pass";
     String encoded = "encoded-pass";
@@ -116,7 +116,7 @@ class AuthenticationServiceTest {
   }
 
   @Test
-  void changePassword_userNotFound_throwsNotFoundApiException() {
+  void changePassword_nonExistentUser_apiExceptionThrown() {
     String username = "missing";
     String newPassword = "whatever";
 
@@ -129,7 +129,7 @@ class AuthenticationServiceTest {
   }
 
   @Test
-  void validate_userNotFoundAfterAuth_throwsException() {
+  void validate_authenticatedButUserNotFound_exceptionThrown() {
     String username = "authenticated";
     String rawPassword = "pass";
 

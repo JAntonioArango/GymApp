@@ -1,5 +1,17 @@
 # 🏋️ GYM TASK MICROSERVICES 🏋️
 
+![Java](https://img.shields.io/badge/Java-21-blue)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.x-brightgreen)
+![Spring Cloud](https://img.shields.io/badge/Spring%20Cloud-2024.x-green)
+![MySQL](https://img.shields.io/badge/MySQL-8-blue)
+![JWT](https://img.shields.io/badge/JWT-Security-orange)
+![Prometheus](https://img.shields.io/badge/Prometheus-Monitoring-red)
+![Grafana](https://img.shields.io/badge/Grafana-11-orange)
+![Docker](https://img.shields.io/badge/Docker-Containerized-blue)
+![Maven](https://img.shields.io/badge/Maven-3.9.x-blue)
+![JUnit](https://img.shields.io/badge/JUnit-5-green)
+![SonarQube](https://img.shields.io/badge/SonarQube-10-blue)
+
 A comprehensive microservices-based gym management system built with Spring Boot and Spring Cloud. </br>
 The application provides complete trainer and trainee management, training sessions, authentication, and monitoring capabilities across distributed services.
 
@@ -48,7 +60,7 @@ This system follows a microservices architecture pattern with:
 | **Persistence**       | Spring Data JPA / Hibernate 6 · MySQL 8**                                |
 | **Monitoring**        | Spring Boot Actuator · Micrometer** · Prometheus v2** · Grafana 11      |
 | **Build**             | Maven 3.9.x** (wrapper) · Dockerfile / Docker Compose                    |
-| **Testing**           | JUnit 5 · Mockito · Spring Boot Test · JaCoCo                            |
+| **Testing**           | JUnit 5 · Mockito · Spring Boot Test · JaCoCo · MethodName_Scenario_ExpectedBehavior naming |
 | **Documentation**     | Swagger / OpenAPI 3.1 (springdoc-openapi)                                |
 | **Utilities**         | Lombok · Jackson · Apache Commons Lang                                   |
 | **Quality & Linting** | SonarQube 10 · Spotless (google-java-format)                             |
@@ -122,8 +134,13 @@ Services are configured via:
 ```bash
 # Run tests with coverage and report
 mvn clean test
-
 ```
+
+### Test Naming Strategy
+All unit tests follow the **MethodName_Scenario_ExpectedBehavior** pattern:
+- `login_validCredentials_tokenDtoWithOkStatus()`
+- `findProfile_nonExistentUser_apiExceptionThrown()`
+- `save_validWorkload_clientCalledAndWorkloadReturned()`
 
 <style>
   h1 { color: rgba(0,178,255,0.9); }
