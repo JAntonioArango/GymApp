@@ -42,7 +42,7 @@ public class SecurityConfig {
     "/ops/metrics",
     "/ops/prometheus/**",
     "/swagger-ui/**",
-    "/v3/api-docs*/**"
+    "/v3/api-docs/**"
   };
 
   @Bean

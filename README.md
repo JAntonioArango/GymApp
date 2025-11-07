@@ -10,6 +10,7 @@
 ![Docker](https://img.shields.io/badge/Docker-Containerized-blue)
 ![Maven](https://img.shields.io/badge/Maven-3.9.x-blue)
 ![JUnit](https://img.shields.io/badge/JUnit-5-green)
+![Cucumber](https://img.shields.io/badge/Cucumber-BDD-brightgreen)
 ![SonarQube](https://img.shields.io/badge/SonarQube-10-blue)
 
 A comprehensive microservices-based gym management system built with Spring Boot and Spring Cloud. </br>
@@ -29,23 +30,23 @@ This system follows a microservices architecture pattern with:
 
 ## 🗝 Key Features 🗝
 
-| Area                              | Endpoints / Use-Cases                                                                                   |
-| --------------------------------- |---------------------------------------------------------------------------------------------------------|
-| **Account Creation**              | Trainer & Trainee registration with auto-generated, BCrypt-hashed credentials                           |
-| **Authentication**                | Username + Password login → JWT issued · Change Password · Brute-force protector (3 fails → 5-min lock) |
-| **Logout / Token Revocation**     | `POST /api/v1/auth/logout` black-lists the JWT (token + exp stored in DB) so it can't be reused         |
-| **Profile Management**            | Retrieve, update, activate/deactivate & delete profiles with validation and optimistic locking          |
-| **Training Management**           | CRUD trainings, list & filter by date-range, trainer/trainee name, and training type                    |
-| **Trainer ⇄ Trainee assignments** | List unassigned active trainers · Atomic update of trainee's trainer list                               |
-| **Monitoring & Health**           | Spring Actuator endpoints `/ops/prometheus`, `/ops/gym-health` exposed for Prometheus                   |
-| **REST & Exception Handling**     | Global exception handler, consistent RFC 7807 (Problem-Details) responses                               |
-| **Documentation**                 | Swagger / OpenAPI with DTO validation examples & API metadata                                           |
-| **Testing & Coverage**            | JUnit 5, Mockito; JaCoCo gate ≥ 80 % (uploaded to SonarQube)                                            |
-| **Code Quality**                  | SonarQube static analysis; Spotless plugin with Google Java Format                                      |
-| **Logging**                       | Console logs, transaction-ID filter, detailed REST call logging                                         |
+| Area                              | Endpoints / Use-Cases                                                                                                      |
+| --------------------------------- |----------------------------------------------------------------------------------------------------------------------------|
+| **Account Creation**              | Trainer & Trainee registration with auto-generated, BCrypt-hashed credentials                                              |
+| **Authentication**                | Username + Password login → JWT issued · Change Password · Brute-force protector (3 fails → 5-min lock)                    |
+| **Logout / Token Revocation**     | `POST /api/v1/auth/logout` black-lists the JWT (token + exp stored in DB) so it can't be reused                            |
+| **Profile Management**            | Retrieve, update, activate/deactivate & delete profiles with validation and optimistic locking                             |
+| **Training Management**           | CRUD trainings, list & filter by date-range, trainer/trainee name, and training type                                       |
+| **Trainer ⇄ Trainee assignments** | List unassigned active trainers · Atomic update of trainee's trainer list                                                  |
+| **Monitoring & Health**           | Spring Actuator endpoints `/ops/prometheus`, `/ops/gym-health` exposed for Prometheus                                      |
+| **REST & Exception Handling**     | Global exception handler, consistent RFC 7807 (Problem-Details) responses                                                  |
+| **Documentation**                 | Swagger / OpenAPI with DTO validation examples & API metadata                                                              |
+| **Testing & Coverage**            | JUnit 5, Mockito, Cucumber BDD; JaCoCo gate ≥ 80 % (uploaded to SonarQube)                                                 |
+| **Code Quality**                  | SonarQube static analysis; Spotless plugin with Google Java Format                                                         |
+| **Logging**                       | Console logs, transaction-ID filter, detailed REST call logging                                                            |
 | **Asynchronous Messaging**       | Event-driven communication between services with message queues, event publishing & dead letter queue for invalid messages |
-| **Microservices**                | Service Discovery (Eureka) · API Gateway · Config Server · Circuit Breakers                             |
-| **Deployment**                    | Docker Compose stack: App, MySQL, Prometheus, Grafana, SonarQube – credentials via `.env`               |
+| **Microservices**                | Service Discovery (Eureka) · API Gateway · Config Server · Circuit Breakers                                                |
+| **Deployment**                    | Docker Compose stack: App, MySQL, Prometheus, Grafana, SonarQube – credentials via `.env`                                  |
 
 ---
 
@@ -110,7 +111,7 @@ docker compose down
 ## 📊 Service Endpoints
 
 | Service | Port | Health Check |
-|---------|------|--------------|
+|---------|------|-----------------|
 | Main App | 8080 | `/ops/gym-health` |
 | Eureka Server | 8762 | `/actuator/health` |
 | API Gateway | 8081 | `/actuator/health` |
@@ -132,16 +133,18 @@ Services are configured via:
 ## 🧪 Testing
 
 ```bash
-# Run tests with coverage and report
+# Run all tests (unit + integration + BDD)
 mvn clean test
+
+# Run only unit tests
+mvn test -Dtest="*Test"
+
+# Run only integration tests  
+mvn test -Dtest="*IT"
+
+# Run only Cucumber BDD tests
+mvn test -Dtest="IntegrationTest,ComponentTest"
 ```
-
-### Test Naming Strategy
-All unit tests follow the **MethodName_Scenario_ExpectedBehavior** pattern:
-- `login_validCredentials_tokenDtoWithOkStatus()`
-- `findProfile_nonExistentUser_apiExceptionThrown()`
-- `save_validWorkload_clientCalledAndWorkloadReturned()`
-
 <style>
   h1 { color: rgba(0,178,255,0.9); }
   h2 { color: #60c5db; }

@@ -1,0 +1,16 @@
+spring:
+  profiles:
+    active: component-test
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jms.artemis.ArtemisAutoConfiguration
+      - org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration
+      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+  jms:
+    enabled: false
+
+logging:
+  level:
+    root: WARN
+    com.epam.gymapp: INFO

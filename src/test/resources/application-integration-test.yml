@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=MySQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+
+  artemis:
+    mode: embedded
+
+eureka:
+  client:
+    enabled: false
+
+jwt:
+  secret: ${JWT_SECRET_TEST:test-secret-key}
+  expiration: 30
+
+logging:
+  level:
+    com.epam.gymapp: WARN
+    org.springframework: WARN
+    org.hibernate: WARN
