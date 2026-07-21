@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 
 import com.epam.gymapp.api.dto.ChangePasswordDto;
 import com.epam.gymapp.api.dto.TokenDto;
+import com.epam.gymapp.entities.Role;
 import com.epam.gymapp.entities.User;
 import com.epam.gymapp.repositories.UserRepository;
 import com.epam.gymapp.services.AuthenticationService;
@@ -49,9 +50,10 @@ public class AuthenticationServiceComponentSteps {
     mockUser.setUsername(username);
     mockUser.setPassword("encodedPassword");
     mockUser.setActive(true);
+    mockUser.setRole(Role.TRAINEE);
 
     when(mockUserRepository.findByUsername(username)).thenReturn(java.util.Optional.of(mockUser));
-    when(mockJwtService.createToken(username)).thenReturn("jwt-token");
+    when(mockJwtService.createToken(username, Role.TRAINEE)).thenReturn("jwt-token");
   }
 
   @Given("I have invalid credentials for user {string}")
@@ -71,7 +73,7 @@ public class AuthenticationServiceComponentSteps {
   public void iAuthenticateThroughTheService() {
     try {
       validatedUser = authenticationService.validate(username, password);
-      String token = mockJwtService.createToken(username);
+      String token = mockJwtService.createToken(username, validatedUser.getRole());
       result = new TokenDto(token);
       thrownException = null;
     } catch (Exception e) {

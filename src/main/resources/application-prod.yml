@@ -1,8 +1,10 @@
 spring:
-  profiles: prod
+  config:
+    activate:
+      on-profile: prod
 
-swagger:
-  enabled: false
-springfox:
-  documentation:
-    enabled: false
+logging:
+  level:
+    com.epam.gymapp: INFO
+    io.micrometer: INFO
+    io.micrometer.core.instrument: INFO

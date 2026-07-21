@@ -1,11 +1,18 @@
 package com.epam.gymapp.services;
 
 import com.epam.gymapp.api.advice.ApiException;
-import com.epam.gymapp.api.dto.*;
+import com.epam.gymapp.api.dto.CreateTrainingDto;
+import com.epam.gymapp.api.dto.TraineeTrainingDto;
+import com.epam.gymapp.api.dto.TrainerTrainingDto;
+import com.epam.gymapp.api.dto.TrainingDto;
+import com.epam.gymapp.api.dto.TrainingTypeDto;
 import com.epam.gymapp.entities.Trainee;
 import com.epam.gymapp.entities.Trainer;
 import com.epam.gymapp.entities.Training;
-import com.epam.gymapp.repositories.*;
+import com.epam.gymapp.repositories.TraineeRepo;
+import com.epam.gymapp.repositories.TrainerRepo;
+import com.epam.gymapp.repositories.TrainingRepo;
+import com.epam.gymapp.repositories.TrainingTypeRepo;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;

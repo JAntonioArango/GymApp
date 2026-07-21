@@ -1,12 +1,18 @@
 package com.epam.gymapp.services;
 
 import com.epam.gymapp.config.JwtConfig;
+import com.epam.gymapp.entities.Role;
 import java.time.Duration;
 import java.time.Instant;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
-import org.springframework.security.oauth2.jwt.*;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwsHeader;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,7 +24,7 @@ public class JwtService {
   private final JwtDecoder decoder;
   private final JwtConfig jwtConfig;
 
-  public String createToken(String username) {
+  public String createToken(String username, Role role) {
     Instant now = Instant.now();
     Instant expiresAt = now.plus(Duration.ofMinutes(jwtConfig.getExpiresMinutes()));
 
@@ -31,6 +37,7 @@ public class JwtService {
             .expiresAt(expiresAt)
             .issuer("gym-task")
             .claim("username", username)
+            .claim("role", role.name())
             .build();
 
     JwsHeader jwsHeader = JwsHeader.with(MacAlgorithm.HS256).build();

@@ -24,7 +24,7 @@
         <maven.compiler.release>${java.version}</maven.compiler.release>
         <junit.jupiter.version>5.11.3</junit.jupiter.version>
         <spring-cloud.version>2023.0.0</spring-cloud.version>
-        <logback.version>1.5.12</logback.version>
+        <logback.version>1.5.13</logback.version>
     </properties>
 
     <dependencyManagement>
@@ -177,7 +177,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.5.13</version>
+            <version>${logback.version}</version>
         </dependency>
 
         <dependency>
@@ -189,21 +189,9 @@
 
 
         <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-core</artifactId>
-            <version>6.4.4</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-crypto</artifactId>
-            <version>6.4.4</version>
-        </dependency>
-
-        <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
-            <version>1.5.13</version>
+            <version>${logback.version}</version>
         </dependency>
 
         <dependency>
@@ -251,7 +239,6 @@
                     <release>${java.version}</release>
                     <source>21</source>
                     <target>21</target>
-                    <compilerArgs>--enable-preview</compilerArgs>
                 </configuration>
             </plugin>
 

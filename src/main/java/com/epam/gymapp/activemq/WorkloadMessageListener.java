@@ -1,6 +1,7 @@
 package com.epam.gymapp.activemq;
 
 import com.epam.gymapp.microservice.TrainerWorkload;
+import com.epam.gymapp.microservice.WorkloadGateway;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,7 @@ public class WorkloadMessageListener {
 
   private final JmsTemplate jmsTemplate;
   private final ObjectMapper objectMapper;
+  private final WorkloadGateway workloadGateway;
 
   @JmsListener(destination = "Asynchronous.Task")
   public void processWorkload(String message) {
@@ -23,6 +25,7 @@ public class WorkloadMessageListener {
 
       if (isValidWorkload(workload)) {
         log.info("Processing valid workload for trainer: {}", workload.username());
+        workloadGateway.save(workload);
 
       } else {
         log.warn("Invalid workload detected, sending to DLQ: {}", message);

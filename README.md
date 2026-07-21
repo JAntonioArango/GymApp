@@ -1,8 +1,8 @@
 # 🏋️ GYM TASK MICROSERVICES 🏋️
 
 ![Java](https://img.shields.io/badge/Java-21-blue)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.x-brightgreen)
-![Spring Cloud](https://img.shields.io/badge/Spring%20Cloud-2024.x-green)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.0-brightgreen)
+![Spring Cloud](https://img.shields.io/badge/Spring%20Cloud-2023.0.0-green)
 ![MySQL](https://img.shields.io/badge/MySQL-8-blue)
 ![JWT](https://img.shields.io/badge/JWT-Security-orange)
 ![Prometheus](https://img.shields.io/badge/Prometheus-Monitoring-red)
@@ -20,11 +20,11 @@ The application provides complete trainer and trainee management, training sessi
 
 This system follows a microservices architecture pattern with:
 - **Service Discovery** (Eureka)
-- **API Gateway** for routing and load balancing
-- **Distributed Configuration** management
-- **Circuit Breaker** patterns for resilience
+- **Circuit Breaker** patterns for resilience (Resilience4j)
 - **Asynchronous Messaging** for event-driven communication
 - **Centralized Monitoring** and observability
+
+> Only the main app and `eureka-server/` (service discovery) are implemented in this repository. An API Gateway and Config Server are not part of the current codebase.
 
 ---
 
@@ -32,8 +32,9 @@ This system follows a microservices architecture pattern with:
 
 | Area                              | Endpoints / Use-Cases                                                                                                      |
 | --------------------------------- |----------------------------------------------------------------------------------------------------------------------------|
-| **Account Creation**              | Trainer & Trainee registration with auto-generated, BCrypt-hashed credentials                                              |
-| **Authentication**                | Username + Password login → JWT issued · Change Password · Brute-force protector (3 fails → 5-min lock)                    |
+| **Account Creation**              | Trainer & Trainee registration with auto-generated, BCrypt-hashed credentials, assigned a `TRAINER`/`TRAINEE` role         |
+| **Authentication**                | Username + Password login → JWT issued (role embedded as a claim) · Change Password · Brute-force protector (3 fails → 5-min DB-backed lock) |
+| **Authorization**                 | Role-based access control (`TRAINER`/`TRAINEE`) plus method-level ownership checks (`@PreAuthorize`) on most profile/training endpoints |
 | **Logout / Token Revocation**     | `POST /api/v1/auth/logout` black-lists the JWT (token + exp stored in DB) so it can't be reused                            |
 | **Profile Management**            | Retrieve, update, activate/deactivate & delete profiles with validation and optimistic locking                             |
 | **Training Management**           | CRUD trainings, list & filter by date-range, trainer/trainee name, and training type                                       |
@@ -45,7 +46,7 @@ This system follows a microservices architecture pattern with:
 | **Code Quality**                  | SonarQube static analysis; Spotless plugin with Google Java Format                                                         |
 | **Logging**                       | Console logs, transaction-ID filter, detailed REST call logging                                                            |
 | **Asynchronous Messaging**       | Event-driven communication between services with message queues, event publishing & dead letter queue for invalid messages |
-| **Microservices**                | Service Discovery (Eureka) · API Gateway · Config Server · Circuit Breakers                                                |
+| **Microservices**                | Service Discovery (Eureka) · Circuit Breakers                                                |
 | **Deployment**                    | Docker Compose stack: App, MySQL, Prometheus, Grafana, SonarQube – credentials via `.env`                                  |
 
 ---
@@ -54,10 +55,10 @@ This system follows a microservices architecture pattern with:
 
 | Layer             | Technology                                                               |
 | ----------------- | ------------------------------------------------------------------------ |
-| **Runtime**          | Java 21, Spring Boot 3.4.x                                               |
-| **Microservices**    | Spring Cloud 2024.x** · Eureka** · Gateway · Config Server · Circuit Breaker |
+| **Runtime**          | Java 21, Spring Boot 3.2.0                                               |
+| **Microservices**    | Spring Cloud 2023.0.0** · Eureka** · Circuit Breaker |
 | **Messaging**        | Spring AMQP · Event-driven architecture · Dead Letter Queue                            |
-| **Security**         | Spring Security 6 · OAuth2 Resource-Server (JWT) · BCrypt · Caffeine cache |
+| **Security**         | Spring Security 6 · OAuth2 Resource-Server (JWT) · Role-based method security (`@PreAuthorize`) · BCrypt · CORS allowlist · HSTS |
 | **Persistence**       | Spring Data JPA / Hibernate 6 · MySQL 8**                                |
 | **Monitoring**        | Spring Boot Actuator · Micrometer** · Prometheus v2** · Grafana 11      |
 | **Build**             | Maven 3.9.x** (wrapper) · Dockerfile / Docker Compose                    |
@@ -114,14 +115,56 @@ docker compose down
 |---------|------|-----------------|
 | Main App | 8080 | `/ops/gym-health` |
 | Eureka Server | 8762 | `/actuator/health` |
-| API Gateway | 8081 | `/actuator/health` |
 
 ## 🔧 Configuration
 
 Services are configured via:
 - `application.yml` - Base configuration
-- `application-docker.yml` - Docker-specific overrides
-- `.env` - Environment variables for Docker Compose
+- `application-dev.yml` / `application-prod.yml` - Profile-specific overrides
+- `.env` - Environment variables for Docker Compose and local runs (gitignored — create your own at the repo root, never commit it)
+
+TLS is expected to terminate at an external reverse proxy/load balancer in front of the app — the app itself does not serve HTTPS directly. `server.forward-headers-strategy: framework` is set so Spring Security can correctly derive the original request scheme from `X-Forwarded-*` headers (required for HSTS and secure-cookie behavior behind that proxy).
+
+### `.env` — required to build/run
+
+| Variable | Consumed by | Notes |
+| --- | --- | --- |
+| `MYSQL_ROOT_PASSWORD` | `db` container | MySQL root password on first init |
+| `MYSQL_DATABASE` | `db` container | Database created on first boot (`gymdb` by convention) |
+| `MYSQL_USER` | `db` container, `app` container | Compose also forwards this as `SPRING_DATASOURCE_USERNAME` for the app |
+| `MYSQL_PASSWORD` | `db` container, `app` container | Compose also forwards this as `SPRING_DATASOURCE_PASSWORD` for the app |
+| `JWT_SECRET` | app | **No default** — `jwt.secret: ${JWT_SECRET}` — the app refuses to start without it |
+
+### `.env` — optional (sensible defaults)
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `JWT_EXPIRES_MINUTES` | `30` | JWT expiration window (minutes) |
+| `CORS_ALLOWED_ORIGINS` | `http://localhost:3000,http://localhost:5173` | Comma-separated allowlist of origins permitted for CORS — no wildcard is supported |
+| `EUREKA_SERVER_URL` | `http://eureka-server:8761/eureka` | Only relevant if pointing the app at a Eureka instance other than the bundled `eureka-server` container |
+| `HOSTNAME` | `app` | Eureka instance hostname advertised by this service |
+
+### `.env` — only needed for local (non-Docker) runs
+
+`docker-compose.yml` hardcodes the datasource/broker connection details for the `app` container (pointing at the `db`/`artemis` service names on the Compose network), so these only matter when running the app directly via `mvn spring-boot:run` / your IDE against services exposed on `localhost`:
+
+| Variable | Example |
+| --- | --- |
+| `SPRING_DATASOURCE_URL` | `jdbc:mysql://localhost:3307/gymdb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC` |
+| `SPRING_DATASOURCE_USERNAME` | same value as `MYSQL_USER` |
+| `SPRING_DATASOURCE_PASSWORD` | same value as `MYSQL_PASSWORD` |
+| `SPRING_ARTEMIS_BROKER_URL` | `tcp://localhost:61616` |
+| `SPRING_ARTEMIS_USER` | `artemis` |
+| `SPRING_ARTEMIS_PASSWORD` | `artemis` |
+
+### `.env` — test / tooling (not required to run the app)
+
+| Variable | Consumed by | Notes |
+| --- | --- | --- |
+| `JWT_SECRET_TEST` | `IntegrationTest` Cucumber suite | Falls back to `test-secret-key` in most integration test config, but is required with no fallback when the `integration-tests` Maven profile wires it through `IntegrationTestConfiguration` |
+| `SONAR_TOKEN` | `.githooks/pre-commit` | Sonar login token for the local pre-commit hook's `sonar:sonar` scan — must be exported in your shell (e.g. `set -a; source .env; set +a`), the hook doesn't read `.env` itself |
+
+> ⚠️ Artemis broker credentials (`ARTEMIS_USER`/`ARTEMIS_PASSWORD`, hardcoded to `artemis`/`artemis`) and Grafana's default admin login are **not** sourced from `.env` in `docker-compose.yml` — don't expose ports `8161` (Artemis console), `61616` (Artemis broker), or `3000` (Grafana) outside a trusted network without changing these first.
 
 ## 📈 Monitoring & Observability
 
@@ -133,18 +176,28 @@ Services are configured via:
 ## 🧪 Testing
 
 ```bash
-# Run all tests (unit + integration + BDD)
+# Unit tests + component BDD suite (default Surefire run, excludes IntegrationTest)
 mvn clean test
 
-# Run only unit tests
+# Only unit tests
 mvn test -Dtest="*Test"
 
-# Run only integration tests  
-mvn test -Dtest="*IT"
+# Only the component Cucumber suite (features/component/*.feature)
+mvn test -Dtest="ComponentTest"
 
-# Run only Cucumber BDD tests
-mvn test -Dtest="IntegrationTest,ComponentTest"
+# Only the integration Cucumber suite (features/integration/*.feature) —
+# requires the "integration-tests" profile, which swaps Surefire's includes/excludes
+mvn test -P integration-tests -Dtest="IntegrationTest"
+
+# Single test class / method
+mvn test -Dtest="TrainerServiceTest"
+mvn test -Dtest="TrainerServiceTest#methodName_scenario_expectedBehavior"
+
+# Coverage gate (80% line coverage, runs JaCoCo's check goal)
+mvn verify
 ```
+
+`mvn clean test` alone never runs `IntegrationTest` — CI must invoke both the default run and the `integration-tests` profile to get full coverage.
 <style>
   h1 { color: rgba(0,178,255,0.9); }
   h2 { color: #60c5db; }

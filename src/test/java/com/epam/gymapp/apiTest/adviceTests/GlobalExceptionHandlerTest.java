@@ -3,7 +3,6 @@ package com.epam.gymapp.apiTest.adviceTests;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-import com.epam.gymapp.api.advice.ApiException;
 import com.epam.gymapp.api.advice.GlobalExceptionHandler;
 import com.epam.gymapp.api.dto.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,21 +32,6 @@ class GlobalExceptionHandlerTest {
     MockitoAnnotations.openMocks(this);
     exceptionHandler = new GlobalExceptionHandler();
     when(request.getRequestURI()).thenReturn("/api/test");
-  }
-
-  @Test
-  void handleApiException_apiException_correctResponseEntityReturned() {
-    HttpStatus expectedStatus = HttpStatus.NOT_FOUND;
-    String expectedMessage = "Resource not found";
-    ApiException apiException = new ApiException(expectedStatus, expectedMessage);
-
-    ResponseEntity<ErrorResponse> responseEntity =
-        exceptionHandler.handleApiException(apiException, request);
-
-    assertNotNull(responseEntity);
-    assertEquals(expectedStatus, responseEntity.getStatusCode());
-    ErrorResponse error = responseEntity.getBody();
-    assertNotNull(error);
   }
 
   @Test

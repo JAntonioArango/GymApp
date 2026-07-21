@@ -1,13 +1,20 @@
 package com.epam.gymapp.services;
 
 import com.epam.gymapp.api.advice.ApiException;
-import com.epam.gymapp.api.dto.*;
+import com.epam.gymapp.api.dto.CreateTraineeDto;
+import com.epam.gymapp.api.dto.TraineeDto;
+import com.epam.gymapp.api.dto.TraineeProfileDto;
+import com.epam.gymapp.api.dto.TraineeRegistrationDto;
+import com.epam.gymapp.api.dto.TrainerShortDto;
+import com.epam.gymapp.api.dto.UpdateTraineeDto;
+import com.epam.gymapp.entities.Role;
 import com.epam.gymapp.entities.Trainee;
 import com.epam.gymapp.entities.Trainer;
 import com.epam.gymapp.entities.User;
 import com.epam.gymapp.repositories.TraineeRepo;
 import com.epam.gymapp.repositories.TrainerRepo;
 import com.epam.gymapp.utils.CredentialGenerator;
+import com.epam.gymapp.utils.ProfileUpdateSupport;
 import jakarta.transaction.Transactional;
 import java.util.HashSet;
 import java.util.List;
@@ -44,6 +51,7 @@ public class TraineeService {
     u.setUsername(creds.buildUniqueUsername(dto.firstName(), dto.lastName()));
     u.setPassword(passwordEncoder.encode(rawPwd));
     u.setActive(true);
+    u.setRole(Role.TRAINEE);
 
     Trainee t = new Trainee();
     t.setUser(u);
@@ -53,15 +61,6 @@ public class TraineeService {
     return traineeRepo.save(t);
   }
 
-  public TraineeDto createProfile(CreateTraineeDto dto) {
-
-    String rawPwd = creds.randomPassword();
-
-    Trainee trainee = buildAndSaveEntity(dto, rawPwd);
-
-    return toDto(trainee);
-  }
-
   public TraineeProfileDto updateProfile(String username, UpdateTraineeDto dto) {
 
     Trainee trainee =
@@ -69,20 +68,10 @@ public class TraineeService {
             .findByUserUsername(username)
             .orElseThrow(() -> ApiException.notFound("Trainee", username));
 
-    traineeRepo
-        .findByUserUsername(dto.username())
-        .ifPresent(
-            t -> {
-              if (!trainee.getId().equals(trainee.getId())) {
-                try {
-                  throw ApiException.duplicate("Username", dto.username());
-                } catch (Exception e) {
-                  throw new RuntimeException(e);
-                }
-              }
-            });
+    ProfileUpdateSupport.assertUsernameAvailable(
+        traineeRepo::findByUserUsername, Trainee::getId, trainee.getId(), dto.username());
 
-    trainee.getUser().setUsername(dto.username().replaceAll("\\s", "."));
+    trainee.getUser().setUsername(ProfileUpdateSupport.sanitizeUsername(dto.username()));
 
     trainee.getUser().setFirstName(dto.firstName());
     trainee.getUser().setLastName(dto.lastName());

@@ -2,6 +2,7 @@ package com.epam.gymapp.entitiesTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.epam.gymapp.entities.Role;
 import com.epam.gymapp.entities.Trainee;
 import com.epam.gymapp.entities.Trainer;
 import com.epam.gymapp.entities.User;
@@ -34,7 +35,8 @@ class UserEntityTest {
     Trainer trainer = new Trainer();
     Trainee trainee = new Trainee();
 
-    User user = new User(1L, "John", "Doe", "johndoe", "password123", true, trainer, trainee);
+    User user =
+        new User(1L, "John", "Doe", "johndoe", "password123", true, Role.TRAINEE, trainer, trainee);
 
     assertEquals(1L, user.getId());
     assertEquals("John", user.getFirstName());
@@ -42,6 +44,7 @@ class UserEntityTest {
     assertEquals("johndoe", user.getUsername());
     assertEquals("password123", user.getPassword());
     assertTrue(user.isActive());
+    assertEquals(Role.TRAINEE, user.getRole());
     assertEquals(trainer, user.getTrainer());
     assertEquals(trainee, user.getTrainee());
   }

@@ -2,7 +2,6 @@ package com.epam.gymapp.api.advice;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
-import javax.security.auth.login.LoginException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +34,7 @@ public class RestExceptionHandler {
     return ResponseEntity.status(ex.getStatus()).body(pd);
   }
 
-  @ExceptionHandler(LoginException.class)
+  @ExceptionHandler(LockedException.class)
   public ResponseEntity<ProblemDetail> locked(LockedException ex, HttpServletRequest req) {
 
     ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.LOCKED);

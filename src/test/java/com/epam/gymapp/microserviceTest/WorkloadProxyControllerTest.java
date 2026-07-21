@@ -6,6 +6,9 @@ import static org.mockito.Mockito.*;
 import com.epam.gymapp.activemq.ProducerController;
 import com.epam.gymapp.microservice.*;
 import java.time.Instant;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,17 +20,20 @@ class WorkloadProxyControllerTest {
 
   @Mock private WorkloadGateway gateway;
   @Mock private ProducerController producerController;
+  @Mock private ObjectMapper objectMapper;
   @InjectMocks private WorkloadProxyController controller;
 
   @Test
-  void save_validWorkload_messageQueuedAndConfirmationReturned() {
+  void save_validWorkload_messageQueuedAndConfirmationReturned() throws JsonProcessingException {
     TrainerWorkload workload =
         new TrainerWorkload("user", "first", "last", true, Instant.now(), 60);
+    String serialized = "{\"username\":\"user\"}";
+    when(objectMapper.writeValueAsString(workload)).thenReturn(serialized);
 
     String result = controller.save(workload).getBody();
 
     assertEquals("Workload queued for processing", result);
-    verify(producerController).send("Asynchronous.Task", workload.toString());
+    verify(producerController).send("Asynchronous.Task", serialized);
   }
 
   @Test

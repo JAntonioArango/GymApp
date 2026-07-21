@@ -3,6 +3,7 @@ package com.epam.gymapp.cucumber.integration;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.epam.gymapp.api.dto.*;
+import com.epam.gymapp.entities.Role;
 import com.epam.gymapp.entities.Trainee;
 import com.epam.gymapp.entities.User;
 import com.epam.gymapp.repositories.TraineeRepo;
@@ -72,6 +73,7 @@ public class AuthenticationSecurityFlowSteps {
     user.setFirstName("Test");
     user.setLastName("User");
     user.setActive(true);
+    user.setRole(Role.TRAINEE);
 
     Trainee trainee = new Trainee();
     trainee.setUser(user);

@@ -1,7 +1,14 @@
 package com.epam.gymapp.services;
 
 import com.epam.gymapp.api.advice.ApiException;
-import com.epam.gymapp.api.dto.*;
+import com.epam.gymapp.api.dto.CreateTrainerDto;
+import com.epam.gymapp.api.dto.TraineeShortDto;
+import com.epam.gymapp.api.dto.TrainerDto;
+import com.epam.gymapp.api.dto.TrainerProfileDto;
+import com.epam.gymapp.api.dto.TrainerRegistrationDto;
+import com.epam.gymapp.api.dto.TrainerShortDto;
+import com.epam.gymapp.api.dto.UpdateTrainerDto;
+import com.epam.gymapp.entities.Role;
 import com.epam.gymapp.entities.Trainer;
 import com.epam.gymapp.entities.TrainingType;
 import com.epam.gymapp.entities.User;
@@ -10,6 +17,7 @@ import com.epam.gymapp.repositories.TrainerRepo;
 import com.epam.gymapp.repositories.TrainingTypeRepo;
 import com.epam.gymapp.repositories.UserRepository;
 import com.epam.gymapp.utils.CredentialGenerator;
+import com.epam.gymapp.utils.ProfileUpdateSupport;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Set;
@@ -43,6 +51,7 @@ public class TrainerService {
     u.setUsername(username);
     u.setPassword(passwordEncoder.encode(rawPassword));
     u.setActive(true);
+    u.setRole(Role.TRAINER);
 
     Trainer t = new Trainer();
     t.setUser(u);
@@ -56,32 +65,6 @@ public class TrainerService {
     trainerRepo.save(t);
 
     return new TrainerRegistrationDto(username, rawPassword);
-  }
-
-  public TrainerDto createProfile(CreateTrainerDto dto) {
-
-    TrainingType spec =
-        typeRepo
-            .findByName(dto.specialization())
-            .orElseThrow(() -> ApiException.notFound("Training type", dto.specialization().name()));
-
-    User u =
-        new User(
-            null,
-            dto.firstName(),
-            dto.lastName(),
-            creds.buildUniqueUsername(dto.firstName(), dto.lastName()),
-            creds.randomPassword(),
-            true,
-            null,
-            null);
-
-    Trainer t = new Trainer();
-    t.setUser(u);
-    t.setSpecialization(spec);
-
-    trainerRepo.save(t);
-    return toDto(t);
   }
 
   public TrainerDto findByUsername(String username) {
@@ -98,20 +81,10 @@ public class TrainerService {
             .findByUserUsername(username)
             .orElseThrow(() -> ApiException.notFound("Trainer", username));
 
-    trainerRepo
-        .findByUserUsername(dto.username())
-        .ifPresent(
-            t -> {
-              if (!t.getId().equals(trainer.getId())) {
-                try {
-                  throw ApiException.duplicate("Username", dto.username());
-                } catch (Exception e) {
-                  throw new RuntimeException(e);
-                }
-              }
-            });
+    ProfileUpdateSupport.assertUsernameAvailable(
+        trainerRepo::findByUserUsername, Trainer::getId, trainer.getId(), dto.username());
 
-    trainer.getUser().setUsername(dto.username().replaceAll("\\s", "."));
+    trainer.getUser().setUsername(ProfileUpdateSupport.sanitizeUsername(dto.username()));
     trainer.getUser().setFirstName(dto.firstName());
     trainer.getUser().setLastName(dto.lastName());
     trainer.getUser().setActive(dto.isActive());

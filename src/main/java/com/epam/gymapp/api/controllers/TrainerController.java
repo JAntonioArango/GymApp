@@ -1,6 +1,9 @@
 package com.epam.gymapp.api.controllers;
 
-import com.epam.gymapp.api.dto.*;
+import com.epam.gymapp.api.dto.CreateTrainerDto;
+import com.epam.gymapp.api.dto.TrainerProfileDto;
+import com.epam.gymapp.api.dto.TrainerRegistrationDto;
+import com.epam.gymapp.api.dto.UpdateTrainerDto;
 import com.epam.gymapp.services.TrainerService;
 import io.micrometer.core.annotation.Timed;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,7 +12,16 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/trainer")
@@ -33,6 +45,7 @@ public class TrainerController {
 
   @GetMapping("/{username}")
   @Operation(summary = "Get trainer profile (8)")
+  @PreAuthorize("isAuthenticated()")
   public TrainerProfileDto getProfile(@PathVariable String username) {
 
     return trainerService.findProfile(username);
@@ -40,6 +53,7 @@ public class TrainerController {
 
   @PutMapping("/{username}")
   @Operation(summary = "Update trainer profile (9)")
+  @PreAuthorize("hasRole('TRAINER') and #username == authentication.name")
   public TrainerProfileDto updateProfile(
       @PathVariable String username, @Valid @RequestBody UpdateTrainerDto body) {
 
@@ -48,6 +62,7 @@ public class TrainerController {
 
   @PatchMapping("/{username}/active")
   @Operation(summary = "Activate/De-Activate Trainer (16)")
+  @PreAuthorize("hasRole('TRAINER') and #username == authentication.name")
   public ResponseEntity<Void> setActive(
       @PathVariable String username, @RequestParam boolean active) {
 

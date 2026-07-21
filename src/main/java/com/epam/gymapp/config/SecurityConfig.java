@@ -4,6 +4,7 @@ import com.epam.gymapp.api.filter.RevocationFilter;
 import com.epam.gymapp.repositories.UserRepository;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
@@ -34,6 +35,9 @@ public class SecurityConfig {
   private final RevocationFilter revocationFilter;
   private final UserRepository userRepo;
 
+  @Value("${cors.allowed-origins}")
+  private String allowedOrigins;
+
   private static final String[] PUBLIC_ENDPOINTS = {
     "/api/v1/trainer/register",
     "/api/v1/trainee/register",
@@ -60,7 +64,7 @@ public class SecurityConfig {
                     User.builder()
                         .username(u.getUsername())
                         .password(u.getPassword())
-                        .roles("USER")
+                        .roles(u.getRole().name())
                         .build())
             .orElseThrow(
                 () -> new UsernameNotFoundException("User %s not found".formatted(username)));
@@ -87,7 +91,11 @@ public class SecurityConfig {
     http.csrf(csrf -> csrf.disable())
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .httpBasic(AbstractHttpConfigurer::disable);
+        .httpBasic(AbstractHttpConfigurer::disable)
+        .headers(
+            headers ->
+                headers.httpStrictTransportSecurity(
+                    hsts -> hsts.includeSubDomains(true).maxAgeInSeconds(31536000)));
   }
 
   private void configureAuthentication(HttpSecurity http, JwtDecoder jwtDecoder) throws Exception {
@@ -115,7 +123,8 @@ public class SecurityConfig {
 
     @Override
     public AbstractAuthenticationToken convert(Jwt jwt) {
-      Collection<GrantedAuthority> auth = List.of(new SimpleGrantedAuthority("ROLE_USER"));
+      String role = jwt.getClaimAsString("role");
+      Collection<GrantedAuthority> auth = List.of(new SimpleGrantedAuthority("ROLE_" + role));
       return new JwtAuthenticationToken(jwt, auth, jwt.getSubject());
     }
   }
@@ -123,7 +132,7 @@ public class SecurityConfig {
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration cfg = new CorsConfiguration();
-    cfg.setAllowedOriginPatterns(List.of("*"));
+    cfg.setAllowedOrigins(Arrays.stream(allowedOrigins.split(",")).map(String::trim).toList());
     cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"));
     cfg.setAllowedHeaders(List.of("Authorization", "Content-Type"));
     cfg.setAllowCredentials(true);

@@ -12,7 +12,7 @@ public class ApiException extends RuntimeException {
     this.status = status;
   }
 
-  public static Exception duplicate(String message, @NotBlank String username) {
+  public static ApiException duplicate(String message, @NotBlank String username) {
     return new ApiException(HttpStatus.CONFLICT, message + ": " + username + " already exists");
   }
 

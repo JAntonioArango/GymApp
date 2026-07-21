@@ -7,6 +7,8 @@ import com.epam.gymapp.api.controllers.AuthController;
 import com.epam.gymapp.api.dto.ChangePasswordDto;
 import com.epam.gymapp.api.dto.TokenDto;
 import com.epam.gymapp.entities.RevokedToken;
+import com.epam.gymapp.entities.Role;
+import com.epam.gymapp.entities.User;
 import com.epam.gymapp.repositories.RevokedTokenRepo;
 import com.epam.gymapp.services.AuthenticationService;
 import com.epam.gymapp.services.JwtService;
@@ -38,7 +40,12 @@ class AuthControllerTest {
     String password = "secret";
     String token = "jwt.token.here";
 
-    when(jwtService.createToken(username)).thenReturn(token);
+    User user = new User();
+    user.setUsername(username);
+    user.setRole(Role.TRAINEE);
+
+    when(authService.validate(username, password)).thenReturn(user);
+    when(jwtService.createToken(username, Role.TRAINEE)).thenReturn(token);
 
     ResponseEntity<TokenDto> response = controller.login(username, password);
 
@@ -46,7 +53,7 @@ class AuthControllerTest {
     assertNotNull(response.getBody());
     assertEquals(token, response.getBody().token());
     verify(authService).validate(username, password);
-    verify(jwtService).createToken(username);
+    verify(jwtService).createToken(username, Role.TRAINEE);
   }
 
   @Test
