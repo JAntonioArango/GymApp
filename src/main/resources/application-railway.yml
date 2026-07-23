@@ -1,0 +1,31 @@
+# application-railway.yml
+spring:
+  config:
+    activate:
+      on-profile: railway
+  datasource:
+    url: jdbc:h2:mem:gymdb;DB_CLOSE_DELAY=-1;MODE=MySQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+  artemis:
+    user: artemis
+    password: artemis
+
+eureka:
+  client:
+    enabled: false
+    register-with-eureka: false
+    fetch-registry: false
+
+management:
+  health:
+    jms:
+      enabled: false
+
+logging:
+  level:
+    com.epam.gymapp: INFO
